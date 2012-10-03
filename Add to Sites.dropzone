@@ -1,0 +1,28 @@
+#!/usr/bin/ruby
+
+# Dropzone Destination Info
+# Name: Add to Sites
+# Description: Adds the dropped file to your Sites folder and then copies the URL of the file to your clipboard
+# Handles: NSFilenamesPboardType
+# Creator: Ry Mawby
+# URL: http://www.lesstalkymoreshippy.com
+# IconURL: http://www.bigbeam.co.uk/dropzone/icons/copy_files.png
+# Events: Dragged
+
+def dragged
+  file_path = $items[0]
+  filename = File.basename(file_path)
+  $dz.begin("Moving #{file_path} to ~/Sites/#{filename}")
+  
+  #try wireless
+  ip = `ipconfig getifaddr en0`
+  if ip == ''
+    ip = `ipconfig getifaddr en1`
+  end
+
+  url = 'http://~rymawby/' + ip.to_s.strip + '/' + filename.to_s
+  target = '~/Sites/' + filename.to_s
+  `cp #{file_path.to_s} #{target.to_s}`
+  $dz.finish("Copied to ~/Sites.")
+  $dz.url(url.to_s)
+end
